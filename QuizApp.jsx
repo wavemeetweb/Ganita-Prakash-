@@ -1,202 +1,164 @@
-import React, { useState } from 'react';
-import { ChevronLeft, CheckCircle2, XCircle, Info, Play, BookOpen } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganita Prakash Quiz Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-// --- DATABASE: 10 Questions for Chapter 1 (Example) ---
-const CHAPTER_DATA = {
-  1: {
-    title: "Patterns in Mathematics",
-    questions: [
-      { id: 1, type: "MCQ", q: "What is the 5th triangular number?", options: ["10", "12", "15", "20"], a: "15", exp: "Triangular numbers follow the pattern n(n+1)/2. For n=5, it is (5*6)/2 = 15." },
-      { id: 2, type: "TF", q: "The number 1 is both a square and a triangular number.", options: ["True", "False"], a: "True", exp: "1 = 1x1 (Square) and 1 is the first triangular number." },
-      { id: 3, type: "Fill", q: "A sequence where each number is the sum of the two preceding ones is named after _______.", a: "Virahanka", exp: "Also known as Fibonacci numbers in the West, these were described much earlier by Indian mathematician Virahanka." },
-      { id: 4, type: "MCQ", q: "Which of these is NOT a square number?", options: ["16", "25", "30", "36"], a: "30", exp: "Square numbers are integers multiplied by themselves. 5x5=25 and 6x6=36. 30 has no integer root." },
-      { id: 5, type: "TF", q: "Even numbers can never be triangular.", options: ["True", "False"], a: "False", exp: "6 and 10 are examples of even triangular numbers." },
-      { id: 6, type: "MCQ", q: "The sum of the first 4 odd numbers (1+3+5+7) is:", options: ["12", "14", "16", "18"], a: "16", exp: "The sum of the first 'n' odd numbers is always n squared (4^2 = 16)." },
-      { id: 7, type: "Fill", q: "The next number in the pattern 1, 4, 9, 16 is ___.", a: "25", exp: "This is a sequence of square numbers: 1², 2², 3², 4², so next is 5²." },
-      { id: 8, type: "MCQ", q: "How many dots are in a square pattern of side 4?", options: ["8", "12", "16", "20"], a: "16", exp: "A square pattern uses dots in an n x n grid. 4 x 4 = 16." },
-      { id: 9, type: "TF", q: "Every number in the Virahanka sequence is prime.", options: ["True", "False"], a: "False", exp: "The sequence starts 1, 1, 2, 3, 5, 8... 8 is not a prime number." },
-      { id: 10, type: "Fill", q: "Triangular numbers represent dots arranged in an equilateral _______.", a: "Triangle", exp: "The dots are arranged to form a triangle shape, starting with one dot at the top." }
-    ]
-  }
-  // Repeat similar structure for Chapters 2-10
-};
+    <script type="text/babel">
+        const { useState } = React;
 
-export default function QuizApp() {
-  const [view, setView] = useState('chapters'); // chapters, types, quiz, results
-  const [selectedCh, setSelectedCh] = useState(null);
-  const [selectedType, setSelectedType] = useState(null);
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [userAnswers, setUserAnswers] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+        const DATA = {
+            1: {
+                title: "Patterns in Mathematics",
+                questions: [
+                    { q: "What is the next triangular number after 1, 3, 6?", a: "10", options: ["8", "9", "10", "12"], exp: "Triangular numbers add the next integer: 6 + 4 = 10." },
+                    { q: "The sum of the first 3 odd numbers (1+3+5) is 9.", a: "True", options: ["True", "False"], exp: "1+3+5 = 9, which is also 3 squared." },
+                    { q: "A square number is formed by multiplying a number by ______.", a: "itself", exp: "For example, 4 x 4 = 16." },
+                    { q: "Which of these is a Virahanka (Fibonacci) number?", a: "8", options: ["7", "8", "9", "10"], exp: "The sequence is 1, 1, 2, 3, 5, 8..." },
+                    { q: "1, 4, 9, 16 are called ______ numbers.", a: "Square", options: ["Triangular", "Square", "Prime", "Even"], exp: "They are 1x1, 2x2, 3x3, and 4x4." },
+                    { q: "Every triangular number is even.", a: "False", options: ["True", "False"], exp: "1, 3, and 15 are odd triangular numbers." },
+                    { q: "How many dots make a triangle with side 3?", a: "6", options: ["3", "5", "6", "9"], exp: "1 dot on top, 2 in middle, 3 on bottom = 6." },
+                    { q: "The 4th square number is 16.", a: "True", options: ["True", "False"], exp: "4 x 4 = 16." },
+                    { q: "1, 1, 2, 3, 5, 8, 13, ___. What's next?", a: "21", options: ["18", "20", "21", "25"], exp: "8 + 13 = 21." },
+                    { q: "Math patterns only happen in books.", a: "False", options: ["True", "False"], exp: "Patterns are everywhere in nature, like flower petals!" }
+                ]
+            }
+        };
 
-  const chapters = Array.from({ length: 10 }, (_, i) => i + 1);
+        function App() {
+            const [view, setView] = useState('home'); // home, type, quiz, result
+            const [ch, setCh] = useState(1);
+            const [type, setType] = useState('');
+            const [idx, setIdx] = useState(0);
+            const [answers, setAnswers] = useState([]);
+            const [input, setInput] = useState('');
 
-  const startQuiz = (type) => {
-    setSelectedType(type);
-    setCurrentIdx(0);
-    setUserAnswers([]);
-    setView('quiz');
-  };
+            const handleAns = (val) => {
+                const updated = [...answers, val];
+                setAnswers(updated);
+                if (idx < 9) { setIdx(idx + 1); setInput(''); } 
+                else { setView('result'); }
+            };
 
-  const handleAnswer = (ans) => {
-    const newAnswers = [...userAnswers, { qIdx: currentIdx, userAns: ans }];
-    setUserAnswers(newAnswers);
-    setInputValue('');
-
-    if (currentIdx < 9) {
-      setCurrentIdx(currentIdx + 1);
-    } else {
-      setView('results');
-    }
-  };
-
-  // --- UI Components ---
-
-  if (view === 'chapters') {
-    return (
-      <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
-        <h1 className="text-4xl font-bold text-center mb-2 text-sky-600">Ganita Prakash</h1>
-        <p className="text-center text-slate-500 mb-10">Select a chapter to begin your journey</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
-          {chapters.map(num => (
-            <div 
-              key={num} 
-              onClick={() => { setSelectedCh(num); setView('types'); }}
-              className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-sky-300 transition-all cursor-pointer group"
-            >
-              <div className="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600 font-bold text-xl mb-4 group-hover:bg-sky-600 group-hover:text-white transition-colors">
-                {num}
-              </div>
-              <h3 className="font-semibold text-lg leading-tight">Chapter {num}</h3>
-              <p className="text-sm text-slate-400 mt-1">10 Question Mock</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'types') {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-100">
-          <button onClick={() => setView('chapters')} className="flex items-center text-sky-600 mb-6 hover:underline">
-            <ChevronLeft size={20}/> Back to Chapters
-          </button>
-          <h2 className="text-2xl font-bold mb-2">Chapter {selectedCh}</h2>
-          <p className="text-slate-500 mb-8">Choose your challenge mode:</p>
-          <div className="space-y-4">
-            {['MCQ', 'True or False', 'Match the Following', 'Fill in the Blanks'].map(type => (
-              <button 
-                key={type}
-                onClick={() => startQuiz(type)}
-                className="w-full p-4 rounded-xl border-2 border-slate-100 text-left font-medium hover:border-sky-400 hover:bg-sky-50 transition-all flex justify-between items-center group"
-              >
-                {type}
-                <Play size={18} className="text-slate-300 group-hover:text-sky-600" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'quiz') {
-    const q = CHAPTER_DATA[1].questions[currentIdx]; // Using Ch 1 as dummy data
-    return (
-      <div className="min-h-screen bg-slate-50 p-6 flex flex-col items-center">
-        <div className="w-full max-w-2xl mb-8">
-          <div className="flex justify-between mb-2 text-sm font-medium text-slate-500">
-            <span>Question {currentIdx + 1} of 10</span>
-            <span>{selectedType}</span>
-          </div>
-          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full bg-sky-500 transition-all duration-500" style={{ width: `${(currentIdx + 1) * 10}%` }}></div>
-          </div>
-        </div>
-
-        <div className="bg-white p-10 rounded-3xl shadow-xl max-w-2xl w-full border border-slate-100">
-          <h2 className="text-2xl font-semibold mb-8">{q.q}</h2>
-          
-          <div className="grid gap-4">
-            {q.options ? q.options.map(opt => (
-              <button 
-                key={opt}
-                onClick={() => handleAnswer(opt)}
-                className="p-5 rounded-2xl border-2 border-slate-100 text-left hover:border-sky-400 hover:bg-sky-50 transition-all font-medium"
-              >
-                {opt}
-              </button>
-            )) : (
-              <div className="space-y-4">
-                <input 
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="w-full p-5 rounded-2xl border-2 border-slate-100 outline-none focus:border-sky-400"
-                />
-                <button 
-                  onClick={() => handleAnswer(inputValue)}
-                  className="w-full bg-sky-600 text-white p-5 rounded-2xl font-bold shadow-lg hover:bg-sky-700 transition-all"
-                >
-                  Submit Answer
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (view === 'results') {
-    const score = userAnswers.filter((ua, i) => ua.userAns.toLowerCase() === CHAPTER_DATA[1].questions[i].a.toLowerCase()).length;
-    return (
-      <div className="min-h-screen bg-slate-50 p-8 flex flex-col items-center">
-        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-3xl w-full text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Quiz Complete!</h2>
-          <div className="text-6xl font-black text-sky-600 mb-4">{score}/10</div>
-          <p className="text-slate-500">Review your answers and explanations below.</p>
-          <button 
-            onClick={() => setView('chapters')}
-            className="mt-6 px-8 py-3 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 transition-all"
-          >
-            Back to Dashboard
-          </button>
-        </div>
-
-        <div className="max-w-3xl w-full space-y-6">
-          {CHAPTER_DATA[1].questions.map((q, i) => {
-            const isCorrect = userAnswers[i]?.userAns.toLowerCase() === q.a.toLowerCase();
-            return (
-              <div key={i} className={`p-6 rounded-2xl border ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-orange-50 border-orange-100'}`}>
-                <div className="flex items-start justify-between mb-4">
-                  <h4 className="font-bold text-lg pr-4">{i + 1}. {q.q}</h4>
-                  {isCorrect ? <CheckCircle2 className="text-emerald-500 shrink-0" /> : <XCircle className="text-orange-500 shrink-0" />}
+            if (view === 'home') return (
+                <div className="p-8 max-w-5xl mx-auto">
+                    <h1 className="text-5xl font-extrabold text-sky-600 mb-2">Ganita Prakash</h1>
+                    <p className="text-slate-500 mb-10 text-xl">Class 6 Mathematics Quiz Hub</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                            <div key={n} onClick={() => {setCh(n); setView('type')}} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:border-sky-400 hover:shadow-2xl transition-all cursor-pointer group">
+                                <div className="text-4xl font-black text-slate-200 group-hover:text-sky-500 mb-2">0{n}</div>
+                                <h2 className="text-xl font-bold">Chapter {n}</h2>
+                                <p className="text-sm text-slate-400">10 Questions • Silent Mode</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className="flex gap-4 mb-4 text-sm">
-                  <div className="flex-1">
-                    <span className="block text-slate-400 uppercase text-[10px] font-bold tracking-wider">Your Answer</span>
-                    <span className={`font-semibold ${isCorrect ? 'text-emerald-700' : 'text-orange-700'}`}>{userAnswers[i]?.userAns || 'Skipped'}</span>
-                  </div>
-                  <div className="flex-1">
-                    <span className="block text-slate-400 uppercase text-[10px] font-bold tracking-wider">Correct Answer</span>
-                    <span className="font-semibold text-slate-800">{q.a}</span>
-                  </div>
-                </div>
-                <div className="bg-white/50 p-4 rounded-xl border border-white/60">
-                  <div className="flex items-center gap-2 text-sky-700 font-bold text-xs mb-1">
-                    <Info size={14} /> EXPLANATION
-                  </div>
-                  <p className="text-sm text-slate-600 leading-relaxed">{q.exp}</p>
-                </div>
-              </div>
             );
-          })}
-        </div>
-      </div>
-    );
-  }
-}
+
+            if (view === 'type') return (
+                <div className="min-h-screen flex items-center justify-center bg-sky-50 p-4">
+                    <div className="bg-white p-10 rounded-[40px] shadow-2xl w-full max-w-lg">
+                        <button onClick={() => setView('home')} className="text-sky-600 font-bold mb-6 block">← Back</button>
+                        <h2 className="text-3xl font-bold mb-8">Select Mode</h2>
+                        <div className="grid gap-4">
+                            {['MCQ', 'True or False', 'Fill in the Blanks'].map(t => (
+                                <button key={t} onClick={() => {setType(t); setView('quiz'); setIdx(0); setAnswers([])}} className="w-full py-5 px-6 rounded-2xl border-2 border-slate-100 text-left font-bold text-lg hover:bg-sky-600 hover:text-white hover:border-sky-600 transition-all">
+                                    {t}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            if (view === 'quiz') {
+                const qObj = DATA[1].questions[idx];
+                return (
+                    <div className="min-h-screen p-6 flex flex-col items-center justify-center">
+                        <div className="w-full max-w-2xl mb-6">
+                            <div className="flex justify-between font-bold text-sky-600 mb-2">
+                                <span>Question {idx+1}/10</span>
+                                <span>Chapter {ch}</span>
+                            </div>
+                            <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
+                                <div className="h-full bg-sky-500 transition-all" style={{width: `${(idx+1)*10}%`}}></div>
+                            </div>
+                        </div>
+                        <div className="bg-white p-12 rounded-[40px] shadow-2xl w-full max-w-2xl border border-white">
+                            <h2 className="text-2xl font-bold mb-10 leading-snug">{qObj.q}</h2>
+                            <div className="grid gap-4">
+                                {type !== 'Fill in the Blanks' ? qObj.options.map(opt => (
+                                    <button key={opt} onClick={() => handleAns(opt)} className="w-full p-5 rounded-2xl border-2 border-slate-50 bg-slate-50 text-left font-semibold hover:border-sky-400 hover:bg-white transition-all text-lg">
+                                        {opt}
+                                    </button>
+                                )) : (
+                                    <div className="space-y-4">
+                                        <input type="text" value={input} onChange={(e)=>setInput(e.target.value)} className="w-full p-5 rounded-2xl bg-slate-100 border-2 border-transparent focus:border-sky-500 outline-none text-lg" placeholder="Enter answer..." />
+                                        <button onClick={() => handleAns(input)} className="w-full py-5 bg-sky-600 text-white rounded-2xl font-bold text-xl shadow-lg hover:bg-sky-700">Next Question</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (view === 'result') {
+                const score = answers.filter((a, i) => a.toLowerCase() === DATA[1].questions[i].a.toLowerCase()).length;
+                return (
+                    <div className="p-8 max-w-3xl mx-auto">
+                        <div className="bg-white p-12 rounded-[40px] shadow-2xl text-center mb-10 border-b-8 border-sky-500">
+                            <h2 className="text-4xl font-black mb-4">Quiz Finished!</h2>
+                            <div className="text-8xl font-black text-sky-600 mb-4">{score}<span className="text-2xl text-slate-300">/10</span></div>
+                            <button onClick={() => setView('home')} className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold hover:scale-105 transition-all">Back to Hub</button>
+                        </div>
+                        <div className="space-y-6">
+                            {DATA[1].questions.map((q, i) => (
+                                <div key={i} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="text-xl font-bold pr-4">{i+1}. {q.q}</h3>
+                                        <span className={answers[i].toLowerCase() === q.a.toLowerCase() ? "text-emerald-500 font-black" : "text-rose-500 font-black"}>
+                                            {answers[i].toLowerCase() === q.a.toLowerCase() ? "CORRECT" : "WRONG"}
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                                        <div className="p-4 bg-slate-50 rounded-xl">
+                                            <p className="text-slate-400 font-bold text-xs mb-1 uppercase">Your Answer</p>
+                                            <p className="font-bold">{answers[i]}</p>
+                                        </div>
+                                        <div className="p-4 bg-sky-50 rounded-xl">
+                                            <p className="text-sky-400 font-bold text-xs mb-1 uppercase">Correct Answer</p>
+                                            <p className="font-bold">{q.a}</p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-amber-50 p-6 rounded-2xl border-l-4 border-amber-400">
+                                        <p className="text-amber-800 text-sm italic font-medium">"{q.exp}"</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
